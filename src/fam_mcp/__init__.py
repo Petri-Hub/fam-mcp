@@ -21,5 +21,5 @@ def main() -> None:
     "senha": FAM_PASSWORD
   })
 
-  print(f"Response status: {response.status_code}")
-  print(f"Response content: {response.content}")
+  successfull = "Petri" in str(response.content) # true, agora cade a porra do cookie?
+
