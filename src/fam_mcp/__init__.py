@@ -1,9 +1,25 @@
-from fastmcp import FastMCP
+from enum import Enum
 
-mcp = FastMCP(name="fam")
-client = 
+import fastmcp
+import os
+import httpx
+import dotenv
 
-def login() 
+dotenv.load_dotenv()
+
+FAM_MCP_NAME = os.getenv("FAM_MCP_NAME")
+FAM_URL = os.getenv("FAM_URL")
+FAM_USERNAME = os.getenv("FAM_USERNAME")
+FAM_PASSWORD = os.getenv("FAM_PASSWORD")
+
+mcp = fastmcp.FastMCP(name=FAM_MCP_NAME)
+client = httpx.Client(base_url=FAM_URL, follow_redirects=True)
 
 def main() -> None:
-    print("Hello from fam-mcp!")
+  response = client.post(url="fam/validacao.php", data={
+    "user": FAM_USERNAME,
+    "senha": FAM_PASSWORD
+  })
+
+  print(f"Response status: {response.status_code}")
+  print(f"Response content: {response.content}")
