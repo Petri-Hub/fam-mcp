@@ -1,10 +1,9 @@
 from fastmcp import FastMCP
 
-mcp = None
-client = None
+mcp = FastMCP(name="fam")
+client = 
 
-def initialize_mcp() -> None:
-    mcp = FastMCP()
+def login() 
 
 def main() -> None:
     print("Hello from fam-mcp!")
