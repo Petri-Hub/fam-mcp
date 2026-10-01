@@ -24,5 +24,20 @@ class PortalUnauthorizedError(PortalError):
 class AuthenticationError(PortalError):
   details = ErrorDetails.AUTHENTICATION_ERROR
 
-class InboxToolError(Error):
+class ConfigurationError(Error):
+  details = ErrorDetails.CONFIGURATION_ERROR
+
+class FamUrlConfigurationError(ConfigurationError):
+  details = ErrorDetails.FAM_URL_CONFIGURATION_ERROR
+
+class FamUsernameConfigurationError(ConfigurationError):
+  details = ErrorDetails.FAM_USERNAME_CONFIGURATION_ERROR
+
+class FamPasswordConfigurationError(ConfigurationError):
+  details = ErrorDetails.FAM_PASSWORD_CONFIGURATION_ERROR
+
+class ToolError(Error):
+  details = ErrorDetails.TOOL_ERROR
+
+class InboxToolError(ToolError):
   details = ErrorDetails.INBOX_TOOL_ERROR

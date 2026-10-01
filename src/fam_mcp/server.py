@@ -4,7 +4,7 @@ import httpx
 import dotenv
 
 from http import HTTPStatus
-from .errors import AuthenticationError, PortalSystemError, PortalUnauthorizedError, PortalUnavailableError, PortalUnknownError, PortalError
+from .errors import AuthenticationError, PortalSystemError, PortalUnauthorizedError, PortalUnavailableError, PortalUnknownError, FamUrlConfigurationError, FamUsernameConfigurationError, FamPasswordConfigurationError
 
 dotenv.load_dotenv()
 
@@ -14,7 +14,17 @@ FAM_USERNAME = os.getenv("FAM_USERNAME")
 FAM_PASSWORD = os.getenv("FAM_PASSWORD")
 
 mcp = fastmcp.FastMCP(name=FAM_MCP_NAME)
-client = httpx.Client(base_url=FAM_URL)
+client = httpx.Client(base_url=FAM_URL or "")  # validate() reports a missing FAM_URL
+
+def validate() -> None:
+  if not FAM_URL:
+    raise FamUrlConfigurationError()
+
+  if not FAM_USERNAME:
+    raise FamUsernameConfigurationError()
+
+  if not FAM_PASSWORD:
+    raise FamPasswordConfigurationError()
 
 def authenticate() -> None:
   try:
