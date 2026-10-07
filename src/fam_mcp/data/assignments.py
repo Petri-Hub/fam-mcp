@@ -31,7 +31,8 @@ class ActivityList:
 class ActivityMaterial:
   index: int
   title: str
-  type: str
+  type: str  # PDF, DOCX... for files; LINK for an external link (see url)
+  url: str | None  # only set for LINK materials
 
 @dataclass
 class ActivityWindow:

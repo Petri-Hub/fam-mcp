@@ -2,6 +2,8 @@ import fastmcp
 import os
 import dotenv
 
+from importlib.metadata import PackageNotFoundError, version
+
 from contextlib import asynccontextmanager
 from fastmcp.server.middleware.timing import TimingMiddleware
 
@@ -25,6 +27,11 @@ The portal is slow (several seconds per page): prefer one broad call over many n
 Failures return {"error": {"code", "message", "retryable", "tool"}}; retry only when retryable is true.
 """
 
+try:
+  VERSION = version("fam-mcp")  # single source of truth: pyproject.toml
+except PackageNotFoundError:
+  VERSION = "1.0.0"
+
 portal = Portal(FAM_URL or "", FAM_USERNAME or "", FAM_PASSWORD or "")  # validate() reports missing settings
 
 @asynccontextmanager
@@ -38,7 +45,7 @@ async def portal_session(_server: fastmcp.FastMCP):
 mcp = fastmcp.FastMCP(
   name=FAM_MCP_NAME,
   instructions=INSTRUCTIONS,
-  version="0.2.0",
+  version=VERSION,
   middleware=[ErrorTranslator(), TimingMiddleware()],
   lifespan=portal_session,
   mask_error_details=True,

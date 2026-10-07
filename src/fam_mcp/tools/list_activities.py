@@ -86,5 +86,5 @@ async def list_activities(
     now = datetime.now(BRAZIL_TZ)
     activities = [a for a in activities if a.due_at and 0 <= (datetime.fromisoformat(a.due_at) - now).days <= due_within_days]
 
-  activities = sorted(activities, key=lambda a: a.due_at or "")[:limit]
-  return ActivityList(term=result.term, total=len(activities), activities=activities)
+  activities = sorted(activities, key=lambda a: a.due_at or "")
+  return ActivityList(term=result.term, total=len(activities), activities=activities[:limit])  # total counts every match, like get_inbox

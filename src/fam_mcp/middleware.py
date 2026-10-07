@@ -30,6 +30,8 @@ class ErrorTranslator(Middleware):
 
       if domain := _find(raised, Error):
         error = domain
+        if domain.reason:
+          details = {"details": domain.reason}
       elif _find(raised, httpx.TimeoutException) or _find(raised, httpx.ConnectError):
         error = PortalUnavailableError()
       elif _find(raised, httpx.HTTPError):

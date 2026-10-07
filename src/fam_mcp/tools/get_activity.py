@@ -9,6 +9,8 @@ from ..utils import parse_date, parse_datetime, parse_number, require, text
 
 import re
 
+from urllib.parse import urlparse
+
 # Blocks inside the description cell that are exposed through their own fields.
 SEPARATE_SECTIONS = {"Material Associado", "Período de Vigência"}
 
@@ -20,7 +22,7 @@ async def fetch_activity_page(activity_id: str):
   )
 
   if soup.find("td", class_="aviso_titulo", string="Título da Atividade:") is None:
-    raise PortalNotFoundError()
+    raise PortalNotFoundError("The portal shows nothing for this id: it does not exist or the activity is not released yet (status 'upcoming' in list_activities).")
 
   return soup
 
@@ -31,6 +33,10 @@ def parse_materials(soup) -> list[tuple[str, str, str]]:
     row = field.find_parent("tr")
     materials.append((text(row.find("td")), text(row.find("font", class_="Mensagens")), field["value"]))
   return materials
+
+def is_external(url: str) -> bool:
+  """Teachers can attach a plain link (e.g. Google Classroom) instead of a file; only files live on the portal host."""
+  return not (urlparse(url).hostname or "").endswith("famportal.com.br")
 
 def _value_below(soup, label: str):
   """The cell in the row below a 'Título da Atividade:'-style label cell."""
@@ -96,7 +102,7 @@ def _submissions(soup) -> list[ActivitySubmission]:
 
 @mcp.tool(title="Assignment detail", tags={"assignments"}, annotations=READ_ONLY)
 async def get_activity(
-  activity_id: Annotated[str, Field(description="The activity id from list_activities, e.g. '10001'")]
+  activity_id: Annotated[str, Field(pattern=r"^\d+$", description="The activity id from list_activities, e.g. '10001'")]
 ) -> ActivityDetail:
   """Read one assignment in full: instructions, attached materials, delivery window, accepted file types and the student's own delivery with grade and teacher feedback, if any.
 
@@ -121,7 +127,10 @@ async def get_activity(
     published_at=parse_date(text(header[2])),
     description=description,
     office_hours=next((line.lstrip("- ") for line in description.split("\n") if re.search(r"plant[ãa]o", line, re.I)), None),
-    materials=[ActivityMaterial(index=i, title=title, type=kind) for i, (title, kind, _) in enumerate(parse_materials(soup), start=1)],
+    materials=[
+      ActivityMaterial(index=i, title=title, type="LINK" if is_external(url) else kind, url=url if is_external(url) else None)
+      for i, (title, kind, url) in enumerate(parse_materials(soup), start=1)
+    ],
     submission_window=_window(soup),
     allowed_file_types=allowed,
     closed="Prazo Encerrado para Entregas" in text(soup),

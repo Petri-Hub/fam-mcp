@@ -1,6 +1,8 @@
 import asyncio
 import sys
 
+from urllib.parse import urlparse
+
 import httpx
 from bs4 import BeautifulSoup
 
@@ -16,33 +18,36 @@ class Portal:
     self._base_url = base_url
     self._username = username
     self._password = password
-    self._client: httpx.AsyncClient | None = None
+    self._client = self._new_client()  # one client for the whole run, so in-flight requests are never cut by a re-login
     self._login_lock = asyncio.Lock()
+    self._session = 0  # bumped on every successful login; lets concurrent calls share one re-login
+    self._sid: str | None = None  # PHPSESSID of the authenticated session
+    self._host = urlparse(base_url).hostname or ""
 
   def _new_client(self) -> httpx.AsyncClient:
     return httpx.AsyncClient(base_url=self._base_url, timeout=httpx.Timeout(30, connect=10), follow_redirects=False)
 
   async def start(self) -> None:
-    self._client = self._new_client()
     try:
       await self.login()
     except Exception as error:  # a tool call will retry the login and report the failure properly
       print(f"Initial login failed: {error!r}", file=sys.stderr)
 
   async def close(self) -> None:
-    if self._client:
-      await self._client.aclose()
-      self._client = None
+    await self._client.aclose()
 
-  async def login(self) -> None:
-    """Open a fresh session. The portal answers 302 to pg_portal.php on success and to index.php?login_falha=1 on bad credentials."""
+  async def login(self, seen_session: int | None = None) -> None:
+    """Open a fresh session. The portal answers 302 to pg_portal.php on success and to index.php?login_falha=1 on bad credentials.
+
+    seen_session is the session number a failed request was made with; if another call already renewed it, there is nothing to do."""
     async with self._login_lock:
-      if self._client:
-        await self._client.aclose()
-      self._client = self._new_client()
+      if seen_session is not None and seen_session != self._session:
+        return
 
+      self._client.cookies.clear()
       response = await self._client.post("fam/validacao.php", data={"user": self._username, "senha": self._password})
       self._raise_for_status(response)
+      self._sid = response.cookies.get("PHPSESSID")
 
       if response.status_code != HTTPStatus.FOUND:
         raise PortalUnknownError()
@@ -51,20 +56,28 @@ class Portal:
         raise AuthenticationError()
 
       # A CPA survey page can replace the home page until it is dismissed; this is the "answer later" request.
+      self._restore_cookie()
       await self._client.post("fam/pg_portal.php", params={"frame": "frame_avisos.php", "entrada": "X", "libera_menu": "X"}, data={"libera_menu": ""})
+      self._session += 1
+
+  def _restore_cookie(self) -> None:
+    """The portal answers even an expired request with a fresh anonymous PHPSESSID. When such a late response lands after another call
+    has logged in again, it would replace the authenticated cookie, so put the authenticated one back before every attempt."""
+    if self._sid and {cookie.value for cookie in self._client.cookies.jar if cookie.name == "PHPSESSID"} != {self._sid}:
+      self._client.cookies.clear()
+      self._client.cookies.set("PHPSESSID", self._sid, domain=self._host, path="/")
 
   async def request(self, method: str, path: str, params: dict | None = None, data: dict | None = None, headers: dict | None = None) -> httpx.Response:
     """Send a request, logging in again once if the session expired."""
-    if self._client is None:
-      await self.login()
-
     for attempt in range(2):
+      session = self._session
+      self._restore_cookie()
       response = await self._send(method, path, params, data, headers)
       self._raise_for_status(response)
 
       if self._session_expired(response):
         if attempt == 0:
-          await self.login()
+          await self.login(session)
           continue
         raise PortalSessionExpiredError()
 

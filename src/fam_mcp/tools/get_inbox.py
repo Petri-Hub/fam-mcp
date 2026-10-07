@@ -1,6 +1,6 @@
 from ..data import InboxMail, Inbox
 from ..server import mcp, portal, READ_ONLY
-from ..utils import text, require
+from ..utils import text, require, parse_date
 
 from pydantic import Field
 from typing import Annotated
@@ -31,7 +31,7 @@ async def get_inbox(
       id=require(re.search(r"msg_id=(\d+)", row["onclick"])).group(1),
       sender=text(cells[0]),
       subject=text(cells[1].find("td")),
-      time=text(cells[2]),
+      time=parse_date(text(cells[2])) or text(cells[2]),  # the list only shows the date
       unread="lovelyrow1" in row["class"],  # lovelyrow1 is styled bold
       has_attachment=cells[1].find("img", alt="clipes") is not None
     ))

@@ -64,7 +64,7 @@ async def get_transcript(
   if semester is not None:
     transcript.semesters = [item for item in transcript.semesters if item.semester == semester]
     if not transcript.semesters:
-      raise PortalNotFoundError()
+      raise PortalNotFoundError(f"The transcript has no semester {semester}.")
 
   if status != "all":
     for item in transcript.semesters:

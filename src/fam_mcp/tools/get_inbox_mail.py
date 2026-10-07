@@ -1,10 +1,16 @@
+from typing import Annotated
+
+from pydantic import Field
+
 from ..data import InboxMailContent, MailAttachment
 from ..errors import PortalNotFoundError
 from ..server import mcp, portal, READ_ONLY
-from ..utils import text, require
+from ..utils import parse_datetime, text, require
 
 @mcp.tool(title="Read inbox message", tags={"communication"}, annotations=READ_ONLY)
-async def get_inbox_mail(mail_id: str) -> InboxMailContent:
+async def get_inbox_mail(
+  mail_id: Annotated[str, Field(pattern=r"^\d+$", description="The message id from get_inbox, e.g. '60001'")]
+) -> InboxMailContent:
   """Read the full content of one inbox message from the FAM portal, given its id (from get_inbox), including the files attached to it.
   Note that the portal marks a message as read when it is opened."""
 
@@ -32,7 +38,7 @@ async def get_inbox_mail(mail_id: str) -> InboxMailContent:
     id=mail_id,
     sender=text(header[1]),
     subject=text(require(subject_label.find_parent("tr").find_next_sibling("tr"))),
-    time=text(header[2]),
+    time=parse_datetime(text(header[2])) or text(header[2]),
     body=require(body_label.find_parent("tr").find_next_sibling("tr")).get_text("\n", strip=True),
     attachments=attachments
   )

@@ -4,6 +4,10 @@ class Error(Exception):
   details: ErrorDetails
   retryable: bool = False
 
+  def __init__(self, reason: str | None = None) -> None:
+    super().__init__(reason)
+    self.reason = reason  # extra explanation for the model, sent as "details"
+
   def __str__(self) -> str:
     return f"{self.details.code} - {self.details.message}"
 
