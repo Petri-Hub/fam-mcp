@@ -10,7 +10,7 @@ from ..data import Course, CourseList, Teacher
 from ..server import mcp, portal, READ_ONLY
 from ..utils import text, require
 
-CourseRefTuple = tuple[str, str]  # (code, name)
+CourseRefTuple = tuple[str, str]
 
 # Image shown by the portal for each teaching-plan state (alt text of the status icon).
 PLAN_STATUS = {

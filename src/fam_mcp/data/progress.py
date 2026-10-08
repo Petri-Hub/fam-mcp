@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class AgendaItem:
-  date: str  # ISO date
+  date: str
   time: str | None  # HH:MM when the portal gives one
   kind: str  # activity | exam | forum | invoice
   title: str

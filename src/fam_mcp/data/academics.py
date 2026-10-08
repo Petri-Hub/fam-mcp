@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-# --- Grades (Notas N1/N2/N3) ---------------------------------------------------------------
-
 @dataclass
 class GradeItem:
   title: str
@@ -30,8 +28,6 @@ class StageGrades:
 class Grades:
   term: str
   stages: list[StageGrades]
-
-# --- Term results (Notas > Resultados) -------------------------------------------------------
 
 @dataclass
 class GradingRules:
@@ -66,8 +62,6 @@ class TermResults:
   weights: dict[str, int]
   courses: list[CourseResult]
 
-# --- Absences (Faltas) -----------------------------------------------------------------------
-
 @dataclass
 class MonthAbsences:
   month: str
@@ -90,8 +84,6 @@ class Absences:
   total: int
   courses: list[CourseAbsences]
   note: str
-
-# --- Transcript (Extrato de Notas) -------------------------------------------------------------
 
 @dataclass
 class TranscriptStudent:

@@ -6,7 +6,7 @@ class Error(Exception):
 
   def __init__(self, reason: str | None = None) -> None:
     super().__init__(reason)
-    self.reason = reason  # extra explanation for the model, sent as "details"
+    self.reason = reason
 
   def __str__(self) -> str:
     return f"{self.details.code} - {self.details.message}"
@@ -43,9 +43,6 @@ class AuthenticationError(PortalError):
 
 class ConfigurationError(Error):
   details = ErrorDetails.CONFIGURATION_ERROR
-
-class FamUrlConfigurationError(ConfigurationError):
-  details = ErrorDetails.FAM_URL_CONFIGURATION_ERROR
 
 class FamUsernameConfigurationError(ConfigurationError):
   details = ErrorDetails.FAM_USERNAME_CONFIGURATION_ERROR

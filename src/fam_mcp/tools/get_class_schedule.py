@@ -11,7 +11,6 @@ from ..server import mcp, portal, READ_ONLY
 from ..utils import text, require
 from .list_courses import parse_plan
 
-# Column order of the timetable grid.
 WEEKDAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
 @mcp.tool(title="Class schedule", tags={"academics"}, annotations=READ_ONLY)

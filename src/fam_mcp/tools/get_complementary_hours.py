@@ -29,7 +29,7 @@ async def fetch_complementary_hours() -> ComplementaryHours:
       continue
 
     if len(cells) != 7 or not (cells[0].get("class") or [""])[0].startswith("Linha"):
-      continue  # column titles and totals
+      continue
 
     link = row.find("a", href=True)
     portal_status = text(cells[4])

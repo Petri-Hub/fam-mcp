@@ -29,7 +29,7 @@ async def fetch_term_results() -> TermResults:
       continue
 
     if len(cells) < 17:
-      require(None)  # a row with a layout we do not know
+      require(None)
 
     courses.append(CourseResult(
       code=code, name=name, grading="available",

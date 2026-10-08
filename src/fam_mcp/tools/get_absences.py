@@ -9,7 +9,7 @@ from ..errors import PortalNotFoundError
 from ..server import mcp, portal, READ_ONLY
 from ..utils import current_term, parse_date, parse_int, require, text
 
-AT_RISK_SHARE = 0.75  # at risk once 75% of the allowed absences are used
+AT_RISK_SHARE = 0.75
 
 @mcp.tool(title="Absences", tags={"academics"}, annotations=READ_ONLY)
 async def get_absences(

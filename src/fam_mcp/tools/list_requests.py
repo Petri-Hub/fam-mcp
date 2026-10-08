@@ -28,7 +28,7 @@ async def list_requests(
     for row in heading.find_parent("table").find_all("tr"):
       cells = row.find_all("td", recursive=False)
       if len(cells) < 4 or not re.fullmatch(r"\d+", text(cells[0])):
-        continue  # heading, column titles, totals
+        continue
 
       groups[group].append(SecretariaRequest(
         number=text(cells[0]),

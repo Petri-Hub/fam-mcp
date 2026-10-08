@@ -12,7 +12,6 @@ class ErrorDetails(Enum):
   PORTAL_NOT_FOUND_ERROR    = ("PT-007", "The portal has no item with that id.")
   AUTHENTICATION_ERROR      = ("AU-001", "Authentication failed. Check your credentials.")
   CONFIGURATION_ERROR       = ("CF-000", "Invalid configuration. Check your environment variables.")
-  FAM_URL_CONFIGURATION_ERROR      = ("CF-001", "FAM_URL is missing. Set it in your environment or .env file.")
   FAM_USERNAME_CONFIGURATION_ERROR = ("CF-002", "FAM_USERNAME is missing. Set it in your environment or .env file.")
   FAM_PASSWORD_CONFIGURATION_ERROR = ("CF-003", "FAM_PASSWORD is missing. Set it in your environment or .env file.")
   INVALID_ARGUMENTS_ERROR   = ("AR-001", "Invalid arguments.")

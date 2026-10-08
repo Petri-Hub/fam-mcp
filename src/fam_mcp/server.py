@@ -2,19 +2,20 @@ import fastmcp
 import os
 import dotenv
 
-from importlib.metadata import PackageNotFoundError, version
+from importlib.metadata import version
 
 from contextlib import asynccontextmanager
 from fastmcp.server.middleware.timing import TimingMiddleware
 
-from .errors import FamUrlConfigurationError, FamUsernameConfigurationError, FamPasswordConfigurationError
+from .errors import FamUsernameConfigurationError, FamPasswordConfigurationError
 from .middleware import ErrorTranslator
 from .portal import Portal
 
 dotenv.load_dotenv()
 
+FAM_MCP_VERSION = version("fam-mcp")
 FAM_MCP_NAME = os.getenv("FAM_MCP_NAME") or "fam"
-FAM_URL = os.getenv("FAM_URL")
+FAM_URL = os.getenv("FAM_URL") or "https://www.famportal.com.br"
 FAM_USERNAME = os.getenv("FAM_USERNAME")
 FAM_PASSWORD = os.getenv("FAM_PASSWORD")
 
@@ -27,12 +28,7 @@ The portal is slow (several seconds per page): prefer one broad call over many n
 Failures return {"error": {"code", "message", "retryable", "tool"}}; retry only when retryable is true.
 """
 
-try:
-  VERSION = version("fam-mcp")  # single source of truth: pyproject.toml
-except PackageNotFoundError:
-  VERSION = "1.0.0"
-
-portal = Portal(FAM_URL or "", FAM_USERNAME or "", FAM_PASSWORD or "")  # validate() reports missing settings
+portal = Portal(FAM_URL, FAM_USERNAME or "", FAM_PASSWORD or "") 
 
 @asynccontextmanager
 async def portal_session(_server: fastmcp.FastMCP):
@@ -45,20 +41,16 @@ async def portal_session(_server: fastmcp.FastMCP):
 mcp = fastmcp.FastMCP(
   name=FAM_MCP_NAME,
   instructions=INSTRUCTIONS,
-  version=VERSION,
+  version=FAM_MCP_VERSION,
   middleware=[ErrorTranslator(), TimingMiddleware()],
   lifespan=portal_session,
   mask_error_details=True,
   strict_input_validation=True,
 )
 
-# Every tool only reads from the portal: safe to auto-approve, safe to repeat.
 READ_ONLY = {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": True}
 
 def validate() -> None:
-  if not FAM_URL:
-    raise FamUrlConfigurationError()
-
   if not FAM_USERNAME:
     raise FamUsernameConfigurationError()
 
