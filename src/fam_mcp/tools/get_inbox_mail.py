@@ -1,33 +1,44 @@
-from ..data import InboxMailContent
-from ..server import mcp, client
-from ..utils import to_soup
-from ..errors import InboxToolError
+from typing import Annotated
 
-@mcp.tool
-def get_inbox_mail(mail_id: str) -> InboxMailContent:
-  """Read the full content of one inbox message from the FAM portal, given its id (from get_inbox)."""
+from pydantic import Field
 
-  try:
-    response = client.get("fam/pg_portal.php", params={
-      "frame": "frame_avisos.php",
-      "entrada": "X",
-      "msg_read": "X",
-      "view": "X",
-      "msg_id": mail_id
-    })
+from ..data import InboxMailContent, MailAttachment
+from ..errors import PortalNotFoundError
+from ..server import mcp, portal, READ_ONLY
+from ..utils import parse_datetime, text, require
 
-    soup = to_soup(response.content.decode("latin-1"))
+@mcp.tool(title="Read inbox message", tags={"communication"}, annotations=READ_ONLY)
+async def get_inbox_mail(
+  mail_id: Annotated[str, Field(pattern=r"^\d+$", description="The message id from get_inbox, e.g. '60001'")]
+) -> InboxMailContent:
+  """Read the full content of one inbox message from the FAM portal, given its id (from get_inbox), including the files attached to it.
+  Note that the portal marks a message as read when it is opened."""
 
-    header = soup.find("td", class_="aviso_titulo_plano").find_all("td")
-    subject_label = soup.find("td", class_="aviso_titulo", string="Assunto:")
-    body_label = soup.find("td", class_="aviso_titulo", string="Mensagem:")
+  soup = await portal.page("frame_avisos.php", entrada="X", msg_read="X", view="X", msg_id=mail_id)
 
-    return InboxMailContent(
-      id=mail_id,
-      sender=header[1].get_text(strip=True),
-      subject=subject_label.find_parent("tr").find_next_sibling("tr").get_text(strip=True),
-      time=header[2].get_text(strip=True),
-      body=body_label.find_parent("tr").find_next_sibling("tr").get_text("\n", strip=True)
-    )
-  except Exception as error:
-    raise InboxToolError() from error
+  header_cell = soup.find("td", class_="aviso_titulo_plano")
+  if header_cell is None:  # an unknown id renders the page without the message header
+    raise PortalNotFoundError()
+
+  header = header_cell.find_all("td")
+  subject_label = require(soup.find("td", class_="aviso_titulo", string="Assunto:"))
+  body_label = require(soup.find("td", class_="aviso_titulo", string="Mensagem:"))
+
+  attachments = []
+  for link in soup.find_all("input", attrs={"name": "mat_link"}):  # "Material Associado" rows keep the file URL in a hidden field
+    row = link.find_parent("tr")
+    type_label = row.find("font", class_="Mensagens")
+    attachments.append(MailAttachment(
+      name=text(row.find("td")),
+      url=link["value"],
+      type=text(type_label) or None
+    ))
+
+  return InboxMailContent(
+    id=mail_id,
+    sender=text(header[1]),
+    subject=text(require(subject_label.find_parent("tr").find_next_sibling("tr"))),
+    time=parse_datetime(text(header[2])) or text(header[2]),
+    body=require(body_label.find_parent("tr").find_next_sibling("tr")).get_text("\n", strip=True),
+    attachments=attachments
+  )
