@@ -3,6 +3,7 @@ name = "fam-mcp"
 version = "1.0.0"
 description = "MCP server for FAM (Faculdade de Americana) University."
 readme = "README.md"
+license = "MIT"
 authors = [
     { name = "Petri", email = "fernando.petri01@gmail.com" }
 ]
