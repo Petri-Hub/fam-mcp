@@ -63,7 +63,7 @@ Every tool is a small module. It asks the portal client for one or more pages, p
 
 | Tools | What they do |
 |---|---|
-| `get_financial_status`<br>`list_requests`<br>`get_complementary_hours` | Open invoices, with the bank data to check them against<br>The requests opened at the secretariat<br>Complementary activity hours, by status |
+| `get_financial_status`<br>`list_requests`<br>`get_complementary_hours` | Open and paid invoices, with the bank data to check them against<br>The requests opened at the secretariat<br>Complementary activity hours, by status |
 
 ## Installation
 
@@ -398,14 +398,9 @@ What's already in place:
 - ✅ Published on PyPI as `fam-mcp`, with `uvx` installation instructions above
 - ✅ Errors as JSON with a code, a retryable flag and the tool that raised them
 - ✅ Masked personal data, and forum replies stripped of other students' identifiers
+- ✅ Paid invoice history alongside open invoices
 - ✅ Every tool checked against the live portal, including its error cases
 - ✅ Server instructions that tell the assistant where to start
-
-What's not there yet:
-
-- ⬜ Sent mail: the portal counts the messages but never renders them
-- ⬜ Paid invoices: the portal seems to keep them behind a separate button the server doesn't use yet
-- ⬜ Posted scores and pending requests: their parsers haven't met real data yet
 
 ## References
 

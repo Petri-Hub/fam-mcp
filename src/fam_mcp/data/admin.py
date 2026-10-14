@@ -22,6 +22,7 @@ class BeneficiaryCheck:
 class FinancialStatus:
   term: str | None
   open_invoices: list[Invoice]
+  paid_invoices: list[Invoice]
   beneficiary_check: BeneficiaryCheck | None
   notice: str
 

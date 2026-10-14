@@ -44,7 +44,7 @@ async def get_agenda(
     fetch_activities() if "activities" in sources else nothing(),
     get_exam_calendar() if "exams" in sources else nothing(),
     fetch_forums() if "forums" in sources else nothing(),
-    fetch_financial_status() if "invoices" in sources else nothing(),
+    fetch_financial_status(include_paid=False) if "invoices" in sources else nothing(),
     return_exceptions=True
   )
 
