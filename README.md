@@ -420,6 +420,7 @@ What's already in place:
       <td align="center" valign="top"><a href="https://github.com/jntmelgar"><img src="https://avatars.githubusercontent.com/u/147103279?v=4" width="64" height="64" alt="@jntmelgar" /><br /><sub>@jntmelgar</sub></a></td>
       <td align="center" valign="top"><a href="https://github.com/Melodypl"><img src="https://avatars.githubusercontent.com/u/167656139?v=4" width="64" height="64" alt="@Melodypl" /><br /><sub>@Melodypl</sub></a></td>
       <td align="center" valign="top"><a href="https://github.com/Petri-Hub"><img src="https://avatars.githubusercontent.com/u/80995990?v=4" width="64" height="64" alt="@Petri-Hub" /><br /><sub>@Petri-Hub</sub></a></td>
+      <td align="center" valign="top"><a href="https://github.com/edumes"><img src="https://avatars.githubusercontent.com/u/66120423?v=4" width="64" height="64" alt="@edumes" /><br /><sub>@edumes</sub></a></td>
     </tr>
   </tbody>
 </table>
