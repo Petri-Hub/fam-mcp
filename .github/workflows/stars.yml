@@ -1,0 +1,92 @@
+name: Update README stargazers
+
+on:
+  watch:
+    types: [started]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-readme-stargazers
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.repository == 'Petri-Hub/fam-mcp'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh the stargazer row
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo
+            const branch = context.ref.replace(/^refs\/heads\//, '')
+
+            const { data: readmeFile } = await github.rest.repos.getContent({
+              owner,
+              repo,
+              path: 'README.md',
+              ref: branch,
+            })
+
+            if (Array.isArray(readmeFile) || readmeFile.type !== 'file') {
+              throw new Error('README.md was not returned as a file')
+            }
+
+            const stargazers = await github.paginate(
+              github.rest.activity.listStargazersForRepo,
+              { owner, repo, per_page: 100 },
+            )
+            const shownStargazers = stargazers.slice(0, 24)
+            const escapeAttribute = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;',
+            })[character])
+
+            const avatars = shownStargazers.map(({ login, html_url, avatar_url }) => {
+              const profileUrl = new URL(html_url)
+              const imageUrl = new URL(avatar_url)
+              if (profileUrl.hostname !== 'github.com' || imageUrl.hostname !== 'avatars.githubusercontent.com') {
+                throw new Error(`Unexpected profile or avatar URL for ${login}`)
+              }
+
+              return `      <td align="center" valign="top"><a href="${escapeAttribute(profileUrl.href)}"><img src="${escapeAttribute(imageUrl.href)}" width="64" height="64" alt="@${escapeAttribute(login)}" /><br /><sub>@${escapeAttribute(login)}</sub></a></td>`
+            })
+
+            const avatarRows = []
+            for (let index = 0; index < avatars.length; index += 6) {
+              avatarRows.push(`    <tr>\n${avatars.slice(index, index + 6).join('\n')}\n    </tr>`)
+            }
+            const avatarMarkup = avatars.length
+              ? `<table align="center">\n  <tbody>\n${avatarRows.join('\n')}\n  </tbody>\n</table>`
+              : ''
+            const block = `<!-- stargazers:start -->\n${avatarMarkup}\n<!-- stargazers:end -->`
+            const readme = Buffer.from(readmeFile.content, 'base64').toString('utf8')
+            const blockPattern = /<!-- stargazers:start -->[\s\S]*?<!-- stargazers:end -->/
+
+            if (!blockPattern.test(readme)) {
+              throw new Error('Could not find the stargazer markers in README.md')
+            }
+
+            const updatedReadme = readme.replace(blockPattern, block)
+            if (updatedReadme === readme) {
+              core.info('The README stargazer row is already current.')
+              return
+            }
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner,
+              repo,
+              path: 'README.md',
+              branch,
+              message: 'chore: update README stargazers',
+              content: Buffer.from(updatedReadme).toString('base64'),
+              sha: readmeFile.sha,
+            })

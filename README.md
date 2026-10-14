@@ -5,7 +5,7 @@
 <h3 align="center">An MCP server for the FAM student portal.<br>It reads the portal so an assistant can answer what the portal makes you click for</h3>
 
 <p align="center">
-  <a href="https://pypi.org/project/fam-mcp/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/fam-mcp?logo=pypi&logoColor=white" /></a> <a href="https://github.com/Petri-Hub/fam-mcp/actions/workflows/build.yml"><img alt="Build" src="https://github.com/Petri-Hub/fam-mcp/actions/workflows/build.yml/badge.svg?branch=main" /></a> <img alt="Python 3.14+" src="https://img.shields.io/badge/python-3.14%2B-3776AB?logo=python&logoColor=white" /> <a href="LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/Petri-Hub/fam-mcp" /></a> <img alt="Time spent" src="https://img.shields.io/endpoint?url=https%3A%2F%2Flab-wakapi.petri.zip%2Fapi%2Fcompat%2Fshields%2Fv1%2FPetri%2Fproject%3Afam-mcp%2Finterval%3Aall_time&label=time%20spent&logo=wakatime&logoColor=white&color=blue&cacheSeconds=3600" />
+  <a href="https://pypi.org/project/fam-mcp/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/fam-mcp?logo=pypi&logoColor=white" /></a> <a href="https://github.com/Petri-Hub/fam-mcp/actions/workflows/build.yml"><img alt="Build" src="https://github.com/Petri-Hub/fam-mcp/actions/workflows/build.yml/badge.svg?branch=main" /></a> <a href="https://github.com/Petri-Hub/fam-mcp/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/Petri-Hub/fam-mcp?style=social" /></a> <img alt="Python 3.14+" src="https://img.shields.io/badge/python-3.14%2B-3776AB?logo=python&logoColor=white" /> <a href="LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/Petri-Hub/fam-mcp" /></a> <img alt="Time spent" src="https://img.shields.io/endpoint?url=https%3A%2F%2Flab-wakapi.petri.zip%2Fapi%2Fcompat%2Fshields%2Fv1%2FPetri%2Fproject%3Afam-mcp%2Finterval%3Aall_time&label=time%20spent&logo=wakatime&logoColor=white&color=blue&cacheSeconds=3600" />
 </p>
 
 <br>
@@ -411,6 +411,20 @@ What's already in place:
 - [uv](https://docs.astral.sh/uv/): how the project is run
 - [FAM](https://www.famportal.com.br): the portal this server reads
 
+## Starred by students
+
+<!-- stargazers:start -->
+<table align="center">
+  <tbody>
+    <tr>
+      <td align="center" valign="top"><a href="https://github.com/jntmelgar"><img src="https://avatars.githubusercontent.com/u/147103279?v=4" width="64" height="64" alt="@jntmelgar" /><br /><sub>@jntmelgar</sub></a></td>
+      <td align="center" valign="top"><a href="https://github.com/Melodypl"><img src="https://avatars.githubusercontent.com/u/167656139?v=4" width="64" height="64" alt="@Melodypl" /><br /><sub>@Melodypl</sub></a></td>
+      <td align="center" valign="top"><a href="https://github.com/Petri-Hub"><img src="https://avatars.githubusercontent.com/u/80995990?v=4" width="64" height="64" alt="@Petri-Hub" /><br /><sub>@Petri-Hub</sub></a></td>
+    </tr>
+  </tbody>
+</table>
+<!-- stargazers:end -->
+
 ## Disclaimer
 
 This project is unofficial. It is not made by, affiliated with or endorsed by FAM.
@@ -418,3 +432,4 @@ This project is unofficial. It is not made by, affiliated with or endorsed by FA
 ## License
 
 MIT, in [`LICENSE.md`](LICENSE.md).
+
