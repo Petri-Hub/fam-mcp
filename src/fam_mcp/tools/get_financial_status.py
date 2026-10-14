@@ -4,30 +4,20 @@ from ..utils import parse_date, parse_number, require, text
 
 import re
 
-async def fetch_financial_status() -> FinancialStatus:
+async def fetch_financial_status(include_paid: bool = True) -> FinancialStatus:
   soup = await portal.page("frame_ficha_financeira.php")
+  paid_invoices = []
+  if include_paid:
+    # The portal's PAGOS button submits this form field. Awaiting the HTTP response
+    # gives us the rendered view without relying on a browser-side sleep.
+    paid_soup = await portal.page_post("frame_ficha_financeira.php", {"titulos": "#"})
+    require(paid_soup.find(string=re.compile("Código do Cedente")))
+    paid_invoices = _parse_invoices(paid_soup)
+
   # The "TÍTULOS EM ABERTO" heading only exists while an invoice is open, so the always-present bank notice proves we got the right page.
   require(soup.find(string=re.compile("Código do Cedente")))
 
-  invoices = []
-  for table in soup.find_all("table"):
-    if table.find("table") or "Nosso Número" not in table.get_text():
-      continue  # only the innermost table of each invoice
-
-    values = _values_after_labels(table)
-    digitable = table.find("td", string=re.compile("Linha Digitável"))
-    bank_code = re.search(r"banco(\d+)", str(table.find("img", src=re.compile("banco\\d+")) or ""))
-
-    invoices.append(Invoice(
-      installment=values.get("Parcela:", ""),
-      due_date=parse_date(values.get("Vencimento:")),
-      amount=parse_number(values.get("Valor do Título:")),
-      currency="BRL",
-      nosso_numero=values.get("Nosso Número:", ""),
-      bank=bank_code.group(1) if bank_code else None,
-      agency_cedente=values.get("Agência/Código do Cedente:"),
-      digitable_line=text(digitable.find_next_sibling("td")) if digitable else None
-    ))
+  invoices = _parse_invoices(soup)
 
   page_text = text(soup)
   bank_name = re.search(r"Banco - (\w+)", page_text)
@@ -51,9 +41,32 @@ async def fetch_financial_status() -> FinancialStatus:
   return FinancialStatus(
     term=term.group(1) if term else None,
     open_invoices=invoices,
+    paid_invoices=paid_invoices,
     beneficiary_check=beneficiary,
     notice=" ".join(n.strip("* ").strip() for n in notices)
   )
+
+def _parse_invoices(soup) -> list[Invoice]:
+  invoices = []
+  for table in soup.find_all("table"):
+    if table.find("table") or "Nosso Número" not in table.get_text():
+      continue  # only the innermost table of each invoice
+
+    values = _values_after_labels(table)
+    digitable = table.find("td", string=re.compile("Linha Digitável"))
+    bank_code = re.search(r"banco(\d+)", str(table.find("img", src=re.compile("banco\\d+")) or ""))
+
+    invoices.append(Invoice(
+      installment=values.get("Parcela:", ""),
+      due_date=parse_date(values.get("Vencimento:")),
+      amount=parse_number(values.get("Valor do Título:")),
+      currency="BRL",
+      nosso_numero=values.get("Nosso Número:", ""),
+      bank=bank_code.group(1) if bank_code else None,
+      agency_cedente=values.get("Agência/Código do Cedente:"),
+      digitable_line=text(digitable.find_next_sibling("td")) if digitable else None
+    ))
+  return invoices
 
 def _values_after_labels(table) -> dict[str, str]:
   """Each cell reads 'Label:<br/>value'; pair every label with the text that follows it."""
@@ -62,6 +75,6 @@ def _values_after_labels(table) -> dict[str, str]:
 
 @mcp.tool(title="Financial status", tags={"finance"}, annotations=READ_ONLY)
 async def get_financial_status() -> FinancialStatus:
-  """Open tuition invoices (boletos) of the current semester with due date, amount and barcode line.
-  Use it for "what do I owe", "when is my next payment" or to pay an invoice. The result also carries the bank data the official invoices use (beneficiary_check); compare it with any invoice before paying, because the portal warns about fraudulent boletos. Paid history is not included."""
+  """Open tuition invoices (boletos) and paid invoice history, with installment, due date, amount and bank reference.
+  Use it for "what do I owe", "when is my next payment" or to check payment history. The result also carries the bank data the official invoices use (beneficiary_check); compare it with any open invoice before paying, because the portal warns about fraudulent boletos."""
   return await fetch_financial_status()
