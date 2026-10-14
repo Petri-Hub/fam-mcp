@@ -28,7 +28,7 @@ With this server the assistant opens those pages for me, and I just ask. Some th
 ## How it works
 
 <p align="center">
-  <img src="assets/how-it-works.svg" alt="You ask the assistant in plain words. The assistant calls a tool in the fam-mcp server and gets JSON back. The tool asks the portal client for a page; the portal client signs in, renews the session and retries, and talks to the FAM portal over HTTPS. The HTML goes to the parser, which hands typed data back to the tool. Any failure goes through the error translator and reaches the assistant as a JSON error. The server's instructions tell the assistant where to start." />
+  <img src="assets/how-it-works.svg" alt="You ask an AI assistant a question. It calls a tool in the local fam-mcp server, which reads FAM portal pages over HTTPS, parses the HTML and returns structured data to the assistant. Access is read-only." />
 </p>
 
 Every tool is a small module. It asks the portal client for one or more pages, parses the HTML into a typed model, and returns it. The portal client keeps a single session for the whole run: it signs in when the server starts, notices when the portal sends it back to the login page, signs in again once and retries the request. Calls that arrive together share that one login.
