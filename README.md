@@ -67,14 +67,34 @@ Every tool is a small module. It asks the portal client for one or more pages, p
 
 ## Installation
 
-FAM MCP is a local **stdio** server published on PyPI. Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/) so `uvx` is available, then configure your MCP client to run `uvx fam-mcp`. The package requires Python 3.14 or newer.
+FAM MCP is a local **stdio** server published on PyPI. It requires Python 3.14 or newer. Most MCP clients can launch it with [`uvx`](https://docs.astral.sh/uv/guides/tools/):
 
-Every client needs your FAM login in the server environment:
+```json
+{
+  "mcpServers": {
+    "fam": {
+      "command": "uvx",
+      "args": ["fam-mcp"],
+      "env": {
+        "FAM_USERNAME": "YOUR_CPF",
+        "FAM_PASSWORD": "YOUR_FAM_PASSWORD"
+      }
+    }
+  }
+}
+```
 
-- `FAM_USERNAME`: your CPF, digits only
-- `FAM_PASSWORD`: your FAM portal password
+### What you will need
 
-Replace the example values below with your credentials. Keep populated user configuration files private, and never commit real credentials to a repository.
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/), which provides the `uvx` command.
+- Python 3.14 or newer.
+- Your FAM portal credentials: `FAM_USERNAME` is your CPF (digits only), and `FAM_PASSWORD` is your portal password.
+
+Replace the example values with your credentials. Keep populated user configuration files private, and never commit real credentials to a repository.
+
+### Client-specific instructions
+
+The examples below cover Claude Code, Claude Desktop, OpenAI Codex, OpenCode, Gemini CLI, Grok Build, DeepSeek Harness, Cursor, VS Code with GitHub Copilot, Zed, Cline, Roo Code, and Continue. Claude.ai and ChatGPT in a browser are covered too; they require a remote MCP server, while FAM MCP currently runs locally over stdio.
 
 <details>
 <summary>Claude Code</summary>
