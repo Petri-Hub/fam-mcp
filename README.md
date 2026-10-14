@@ -65,8 +65,7 @@ Every tool is a small module. It asks the portal client for one or more pages, p
 |---|---|
 | `get_financial_status`<br>`list_requests`<br>`get_complementary_hours` | Open invoices, with the bank data to check them against<br>The requests opened at the secretariat<br>Complementary activity hours, by status |
 
-<details>
-<summary>Install in a popular AI assistant</summary>
+## Installation
 
 FAM MCP is a local **stdio** server published on PyPI. Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/) so `uvx` is available, then configure your MCP client to run `uvx fam-mcp`. The package requires Python 3.14 or newer.
 
@@ -320,8 +319,6 @@ See the [Continue MCP guide](https://docs.continue.dev/customize/deep-dives/mcp)
 <summary>Claude.ai and ChatGPT in a browser</summary>
 
 These web apps connect to **remote** MCP servers. FAM MCP currently runs locally over stdio and does not publish a remote endpoint, so you cannot paste `uvx fam-mcp` into their connector settings. Connecting a web app requires a separately hosted or securely tunneled remote MCP endpoint. See [Claude remote connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) and [ChatGPT MCP connectors](https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt).
-
-</details>
 
 </details>
 
