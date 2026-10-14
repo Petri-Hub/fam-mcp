@@ -5,7 +5,7 @@
 <h3 align="center">An MCP server for the FAM student portal.<br>It reads the portal so an assistant can answer what the portal makes you click for</h3>
 
 <p align="center">
-  <img alt="Python" src="https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white" /> <img alt="MCP server" src="https://img.shields.io/badge/MCP-server-1F6FEB?logo=modelcontextprotocol&logoColor=white" /> <a href="https://github.com/Petri-Hub/fam-mcp/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Petri-Hub/fam-mcp" /></a> <img alt="Time spent" src="https://img.shields.io/endpoint?url=https%3A%2F%2Flab-wakapi.petri.zip%2Fapi%2Fcompat%2Fshields%2Fv1%2FPetri%2Fproject%3Afam-mcp%2Finterval%3Aall_time&label=time%20spent&logo=wakatime&logoColor=white&color=blue&cacheSeconds=3600" />
+  <a href="https://pypi.org/project/fam-mcp/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/fam-mcp?logo=pypi&logoColor=white" /></a> <a href="https://github.com/Petri-Hub/fam-mcp/actions/workflows/build.yml"><img alt="Build" src="https://github.com/Petri-Hub/fam-mcp/actions/workflows/build.yml/badge.svg?branch=main" /></a> <img alt="Python 3.14+" src="https://img.shields.io/badge/python-3.14%2B-3776AB?logo=python&logoColor=white" /> <a href="LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/Petri-Hub/fam-mcp" /></a> <img alt="Time spent" src="https://img.shields.io/endpoint?url=https%3A%2F%2Flab-wakapi.petri.zip%2Fapi%2Fcompat%2Fshields%2Fv1%2FPetri%2Fproject%3Afam-mcp%2Finterval%3Aall_time&label=time%20spent&logo=wakatime&logoColor=white&color=blue&cacheSeconds=3600" />
 </p>
 
 <br>
