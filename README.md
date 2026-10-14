@@ -65,6 +65,266 @@ Every tool is a small module. It asks the portal client for one or more pages, p
 |---|---|
 | `get_financial_status`<br>`list_requests`<br>`get_complementary_hours` | Open invoices, with the bank data to check them against<br>The requests opened at the secretariat<br>Complementary activity hours, by status |
 
+<details>
+<summary>Install in a popular AI assistant</summary>
+
+FAM MCP is a local **stdio** server published on PyPI. Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/) so `uvx` is available, then configure your MCP client to run `uvx fam-mcp`. The package requires Python 3.14 or newer.
+
+Every client needs your FAM login in the server environment:
+
+- `FAM_USERNAME`: your CPF, digits only
+- `FAM_PASSWORD`: your FAM portal password
+
+Replace the example values below with your credentials. Keep populated user configuration files private, and never commit real credentials to a repository.
+
+<details>
+<summary>Claude Code</summary>
+
+Run this in a terminal. The `user` scope makes FAM available in all your Claude Code projects:
+
+```sh
+claude mcp add --transport stdio --scope user \
+  --env "FAM_USERNAME=YOUR_CPF" \
+  --env "FAM_PASSWORD=YOUR_FAM_PASSWORD" \
+  fam -- uvx fam-mcp
+```
+
+Check the connection with `claude mcp get fam` or `/mcp` inside Claude Code. See the [Claude Code MCP guide](https://code.claude.com/docs/en/mcp).
+
+</details>
+
+<details>
+<summary>Claude Desktop</summary>
+
+Open **Settings → Developer → Edit Config** and add this entry inside `mcpServers`:
+
+```json
+{
+  "mcpServers": {
+    "fam": {
+      "command": "uvx",
+      "args": ["fam-mcp"],
+      "env": {
+        "FAM_USERNAME": "YOUR_CPF",
+        "FAM_PASSWORD": "YOUR_FAM_PASSWORD"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop after saving. See [Claude Desktop local MCP setup](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop).
+
+</details>
+
+<details>
+<summary>OpenAI Codex</summary>
+
+Add this to `~/.codex/config.toml`. The same user config is used by Codex CLI and its IDE integrations:
+
+```toml
+[mcp_servers.fam]
+command = "uvx"
+args = ["fam-mcp"]
+env = { FAM_USERNAME = "YOUR_CPF", FAM_PASSWORD = "YOUR_FAM_PASSWORD" }
+```
+
+Restart Codex, then check the server with `codex mcp list`. See the [Codex configuration reference](https://developers.openai.com/codex/config-reference/).
+
+</details>
+
+<details>
+<summary>OpenCode</summary>
+
+Add this server under `mcp` in your user `~/.config/opencode/opencode.json` or project `opencode.json`:
+
+```json
+{
+  "mcp": {
+    "fam": {
+      "type": "local",
+      "command": ["uvx", "fam-mcp"],
+      "environment": {
+        "FAM_USERNAME": "YOUR_CPF",
+        "FAM_PASSWORD": "YOUR_FAM_PASSWORD"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+See the [OpenCode MCP server guide](https://opencode.ai/docs/mcp-servers/).
+
+</details>
+
+<details>
+<summary>Gemini CLI</summary>
+
+Run:
+
+```sh
+gemini mcp add --scope user \
+  --env "FAM_USERNAME=YOUR_CPF" \
+  --env "FAM_PASSWORD=YOUR_FAM_PASSWORD" \
+  fam uvx fam-mcp
+```
+
+Check with `gemini mcp list`. See the [Gemini CLI MCP guide](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md).
+
+</details>
+
+<details>
+<summary>Grok Build</summary>
+
+Add this to `~/.grok/config.toml`:
+
+```toml
+[mcp_servers.fam]
+command = "uvx"
+args = ["fam-mcp"]
+env = { FAM_USERNAME = "YOUR_CPF", FAM_PASSWORD = "YOUR_FAM_PASSWORD" }
+enabled = true
+```
+
+Reload the MCP list in Grok Build after saving. See the [Grok Build MCP guide](https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/07-mcp-servers.md).
+
+</details>
+
+<details>
+<summary>DeepSeek Harness</summary>
+
+Add this MCP client entry to your DeepSeek Harness Cordis profile. Start the harness with `FAM_USERNAME` and `FAM_PASSWORD` set in its environment:
+
+```yaml
+- id: mcp-fam
+  name: '@deepseek-ai/dsh-mcp-client'
+  config:
+    serverName: fam
+    transport: stdio
+    command: uvx
+    args: [fam-mcp]
+    env:
+      FAM_USERNAME: !!js process.env.FAM_USERNAME
+      FAM_PASSWORD: !!js process.env.FAM_PASSWORD
+```
+
+See the [DeepSeek Harness MCP client guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/mcp/mcp-client/README.md).
+
+</details>
+
+<details>
+<summary>Cursor</summary>
+
+Add this entry under `mcpServers` in `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "fam": {
+      "command": "uvx",
+      "args": ["fam-mcp"],
+      "env": {
+        "FAM_USERNAME": "YOUR_CPF",
+        "FAM_PASSWORD": "YOUR_FAM_PASSWORD"
+      }
+    }
+  }
+}
+```
+
+See the [Cursor MCP guide](https://cursor.com/docs/context/mcp).
+
+</details>
+
+<details>
+<summary>VS Code with GitHub Copilot</summary>
+
+Create or edit `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "fam": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["fam-mcp"],
+      "env": {
+        "FAM_USERNAME": "YOUR_CPF",
+        "FAM_PASSWORD": "YOUR_FAM_PASSWORD"
+      }
+    }
+  }
+}
+```
+
+Start the server from the MCP Servers view in Copilot Chat. See [VS Code MCP setup](https://code.visualstudio.com/docs/agent-customization/mcp-servers).
+
+</details>
+
+<details>
+<summary>Zed</summary>
+
+Add this entry under `context_servers` in Zed's `settings.json`:
+
+```json
+{
+  "context_servers": {
+    "fam": {
+      "command": "uvx",
+      "args": ["fam-mcp"],
+      "env": {
+        "FAM_USERNAME": "YOUR_CPF",
+        "FAM_PASSWORD": "YOUR_FAM_PASSWORD"
+      }
+    }
+  }
+}
+```
+
+See the [Zed MCP guide](https://zed.dev/docs/ai/mcp).
+
+</details>
+
+<details>
+<summary>Cline and Roo Code</summary>
+
+In either extension's MCP settings, add a **local stdio** server with command `uvx`, argument `fam-mcp`, and environment variables `FAM_USERNAME` and `FAM_PASSWORD`. Both provide an MCP settings editor in the extension UI. See the [Cline MCP guide](https://github.com/cline/cline/blob/main/docs/mcp/mcp-overview.mdx) and [Roo Code MCP guide](https://roocodeinc.github.io/Roo-Code/features/mcp/using-mcp-in-roo/).
+
+</details>
+
+<details>
+<summary>Continue</summary>
+
+Create `.continue/mcpServers/fam.yaml`:
+
+```yaml
+name: FAM MCP
+version: 1.0.0
+schema: v1
+mcpServers:
+  - name: FAM
+    command: uvx
+    args:
+      - fam-mcp
+    env:
+      FAM_USERNAME: YOUR_CPF
+      FAM_PASSWORD: YOUR_FAM_PASSWORD
+```
+
+See the [Continue MCP guide](https://docs.continue.dev/customize/deep-dives/mcp).
+
+</details>
+
+<details>
+<summary>Claude.ai and ChatGPT in a browser</summary>
+
+These web apps connect to **remote** MCP servers. FAM MCP currently runs locally over stdio and does not publish a remote endpoint, so you cannot paste `uvx fam-mcp` into their connector settings. Connecting a web app requires a separately hosted or securely tunneled remote MCP endpoint. See [Claude remote connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) and [ChatGPT MCP connectors](https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt).
+
+</details>
+
+</details>
+
 ## Philosophy
 
 **Read-only, always.**  
@@ -118,6 +378,7 @@ What's already in place:
 
 - ✅ A portal client that signs in, survives an expired session and shares one login between parallel calls
 - ✅ 21 read-only tools across the student's profile, academics, assignments, communication and finances
+- ✅ Published on PyPI as `fam-mcp`, with `uvx` installation instructions above
 - ✅ Errors as JSON with a code, a retryable flag and the tool that raised them
 - ✅ Masked personal data, and forum replies stripped of other students' identifiers
 - ✅ Every tool checked against the live portal, including its error cases
@@ -128,7 +389,6 @@ What's not there yet:
 - ⬜ Sent mail: the portal counts the messages but never renders them
 - ⬜ Paid invoices: the portal seems to keep them behind a separate button the server doesn't use yet
 - ⬜ Posted scores and pending requests: their parsers haven't met real data yet
-- ⬜ A public release, with installation instructions
 
 ## References
 
